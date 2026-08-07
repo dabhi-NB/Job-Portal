@@ -1,0 +1,85 @@
+{
+    "info": {
+        "name": "Job Portal API",
+        "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    },
+    "item": [
+        {
+            "name": "Auth Register",
+            "request": {
+                "method": "POST",
+                "header": [
+                    {
+                        "key": "Content-Type",
+                        "value": "application/json"
+                    }
+                ],
+                "body": {
+                    "mode": "raw",
+                    "raw": "{\n  \"name\": \"Test Employer\",\n  \"email\": \"employer@example.com\",\n  \"password\": \"123456\",\n  \"role\": \"employer\"\n}"
+                },
+                "url": {
+                    "raw": "{{baseUrl}}/auth/register",
+                    "host": [
+                        "{{baseUrl}}"
+                    ],
+                    "path": [
+                        "auth",
+                        "register"
+                    ]
+                }
+            }
+        },
+        {
+            "name": "Auth Login",
+            "request": {
+                "method": "POST",
+                "header": [
+                    {
+                        "key": "Content-Type",
+                        "value": "application/json"
+                    }
+                ],
+                "body": {
+                    "mode": "raw",
+                    "raw": "{\n  \"email\": \"employer@example.com\",\n  \"password\": \"123456\"\n}"
+                },
+                "url": {
+                    "raw": "{{baseUrl}}/auth/login",
+                    "host": [
+                        "{{baseUrl}}"
+                    ],
+                    "path": [
+                        "auth",
+                        "login"
+                    ]
+                }
+            }
+        },
+        {
+            "name": "Get Jobs",
+            "request": {
+                "method": "GET",
+                "url": {
+                    "raw": "{{baseUrl}}/jobs",
+                    "host": [
+                        "{{baseUrl}}"
+                    ],
+                    "path": [
+                        "jobs"
+                    ]
+                }
+            }
+        }
+    ],
+    "variable": [
+        {
+            "key": "baseUrl",
+            "value": "http://localhost:5000/api"
+        },
+        {
+            "key": "token",
+            "value": ""
+        }
+    ]
+}

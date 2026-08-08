@@ -116,11 +116,11 @@ Job-Portal/
   - `loginUser`: Authenticates credentials via bcrypt, returns JWT token and user details.
   - `getMe`: Protected endpoint returning authentic user profile fetched directly from MongoDB to verify client JWT validity.
 - **`jobController.js`**:
-  - `getJobs`: Fetches jobs with regex search filtering (`title`, `company`, `location`, `skills`, `minSalary`, `maxSalary`).
+  - `getAllJobs`: Fetches jobs with regex search filtering (`title`, `company`, `location`, `skills`, `minSalary`, `maxSalary`).
   - `getJobById`: Retrieves job details and populates employer name & email.
   - `createJob`: Employer creates a new job listing.
   - `updateJob`: Employer updates an existing job listing owned by them.
-  - `deleteJob`: Employer deletes a job listing and associated applications.
+  - `deleteJob`: Employer deletes a job listing (owner-only). Cascades to delete all applications tied to that job, preventing orphaned records.
 - **`applicationController.js`**:
   - `applyForJob`: Candidate submits an application with uploaded file or verified URL link + cover note via multipart/form-data or JSON.
   - `getMyApplications`: Candidate retrieves their submitted applications with status tags.
@@ -206,7 +206,7 @@ Job-Portal/
 ```bash
 cd backend
 npm install
-# Ensure .env has MONGODB_URI, JWT_SECRET, and PORT=5000
+# Ensure .env has MONGODB_URI, JWT_SECRET, JWT_EXPIRE, and PORT=5000
 npm run dev
 ```
 

@@ -1,4 +1,5 @@
 import Job from '../models/Job.js';
+import Application from '../models/Application.js';
 
 // Helper: escape regex special characters to prevent NoSQL injection
 const escapeRegex = (str) => str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
@@ -114,8 +115,11 @@ const deleteJob = async (req, res, next) => {
             return res.status(403).json({ success: false, message: 'You can only delete your own jobs' });
         }
 
+        // Cascade delete: remove all applications tied to this job so no orphaned records remain
+        await Application.deleteMany({ jobId: req.params.id });
+
         await job.deleteOne();
-        res.status(200).json({ success: true, message: 'Job deleted successfully' });
+        res.status(200).json({ success: true, message: 'Job and its applications deleted successfully' });
     } catch (error) {
         next(error);
     }

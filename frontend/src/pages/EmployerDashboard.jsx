@@ -104,6 +104,34 @@ const EmployerDashboard = () => {
         return parts[parts.length - 1];
     };
 
+    const [downloadingId, setDownloadingId] = useState(null);
+
+    // Forces a real file download even across different origins (backend vs frontend port).
+    // A plain <a href download> tag is ignored by browsers for cross-origin URLs,
+    // so we fetch the file ourselves and trigger the download from a same-origin blob URL.
+    const handleDownloadResume = async (resumePath, appId) => {
+        try {
+            setDownloadingId(appId);
+            const response = await fetch(`${BACKEND_URL}${resumePath}`);
+            if (!response.ok) throw new Error('Failed to fetch resume');
+            const blob = await response.blob();
+            const blobUrl = window.URL.createObjectURL(blob);
+
+            const link = document.createElement('a');
+            link.href = blobUrl;
+            link.download = getFileName(resumePath);
+            document.body.appendChild(link);
+            link.click();
+            link.remove();
+            window.URL.revokeObjectURL(blobUrl);
+        } catch (err) {
+            console.error('Resume download failed:', err);
+            setError('Unable to download resume. Please try again.');
+        } finally {
+            setDownloadingId(null);
+        }
+    };
+
     if (loadingJobs) return <Loader message="Loading dashboard..." />;
 
     return (
@@ -258,13 +286,14 @@ const EmployerDashboard = () => {
                                     >
                                         📂 View Resume
                                     </a>
-                                    <a
-                                        href={`${BACKEND_URL}${app.resume}`}
-                                        download
-                                        className="btn btn-secondary text-xs px-3 py-1"
+                                    <button
+                                        type="button"
+                                        onClick={() => handleDownloadResume(app.resume, app._id)}
+                                        disabled={downloadingId === app._id}
+                                        className="btn btn-secondary text-xs px-3 py-1 disabled:opacity-60"
                                     >
-                                        ⬇️ Download
-                                    </a>
+                                        {downloadingId === app._id ? '⏳ Downloading...' : '⬇️ Download'}
+                                    </button>
                                 </>
                             ) : isLinkResume(app.resume) ? (
                                 <>

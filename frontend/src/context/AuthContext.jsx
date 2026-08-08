@@ -3,19 +3,41 @@ import axiosInstance from '../api/axiosInstance';
 
 const AuthContext = createContext(null);
 
-const API_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api';
-
 export const AuthProvider = ({ children }) => {
     const [user, setUser] = useState(null);
     const [token, setToken] = useState(localStorage.getItem('token'));
     const [loading, setLoading] = useState(true);
 
+    const logout = () => {
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+        setToken(null);
+        setUser(null);
+    };
+
     useEffect(() => {
-        const storedUser = localStorage.getItem('user');
-        if (token && storedUser) {
-            setUser(JSON.parse(storedUser));
-        }
-        setLoading(false);
+        const verifyUserToken = async () => {
+            if (!token) {
+                setUser(null);
+                setLoading(false);
+                return;
+            }
+
+            try {
+                // Verify JWT token signature with backend server to prevent role tampering in localStorage
+                const res = await axiosInstance.get('/auth/me');
+                const verifiedUser = res.data.user;
+                setUser(verifiedUser);
+                localStorage.setItem('user', JSON.stringify(verifiedUser));
+            } catch (err) {
+                console.error('JWT Token validation failed or user role tampered:', err);
+                logout();
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        verifyUserToken();
     }, [token]);
 
     const login = async (email, password) => {
@@ -36,13 +58,6 @@ export const AuthProvider = ({ children }) => {
         setToken(authToken);
         setUser(authUser);
         return response.data;
-    };
-
-    const logout = () => {
-        localStorage.removeItem('token');
-        localStorage.removeItem('user');
-        setToken(null);
-        setUser(null);
     };
 
     const value = useMemo(() => ({ user, token, loading, login, register, logout }), [user, token, loading]);

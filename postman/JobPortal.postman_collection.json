@@ -5,14 +5,11 @@
     },
     "item": [
         {
-            "name": "Auth Register",
+            "name": "Auth - Register",
             "request": {
                 "method": "POST",
                 "header": [
-                    {
-                        "key": "Content-Type",
-                        "value": "application/json"
-                    }
+                    { "key": "Content-Type", "value": "application/json" }
                 ],
                 "body": {
                     "mode": "raw",
@@ -20,25 +17,17 @@
                 },
                 "url": {
                     "raw": "{{baseUrl}}/auth/register",
-                    "host": [
-                        "{{baseUrl}}"
-                    ],
-                    "path": [
-                        "auth",
-                        "register"
-                    ]
+                    "host": ["{{baseUrl}}"],
+                    "path": ["auth", "register"]
                 }
             }
         },
         {
-            "name": "Auth Login",
+            "name": "Auth - Login",
             "request": {
                 "method": "POST",
                 "header": [
-                    {
-                        "key": "Content-Type",
-                        "value": "application/json"
-                    }
+                    { "key": "Content-Type", "value": "application/json" }
                 ],
                 "body": {
                     "mode": "raw",
@@ -46,40 +35,165 @@
                 },
                 "url": {
                     "raw": "{{baseUrl}}/auth/login",
-                    "host": [
-                        "{{baseUrl}}"
-                    ],
-                    "path": [
-                        "auth",
-                        "login"
+                    "host": ["{{baseUrl}}"],
+                    "path": ["auth", "login"]
+                }
+            }
+        },
+        {
+            "name": "Jobs - Create Job",
+            "request": {
+                "method": "POST",
+                "header": [
+                    { "key": "Content-Type", "value": "application/json" },
+                    { "key": "Authorization", "value": "Bearer {{token}}" }
+                ],
+                "body": {
+                    "mode": "raw",
+                    "raw": "{\n  \"title\": \"React Developer\",\n  \"company\": \"TechCorp\",\n  \"description\": \"Build modern web apps with React.\",\n  \"location\": \"Remote\",\n  \"salary\": 55000,\n  \"skills\": [\"React\", \"JavaScript\", \"CSS\"]\n}"
+                },
+                "url": {
+                    "raw": "{{baseUrl}}/jobs",
+                    "host": ["{{baseUrl}}"],
+                    "path": ["jobs"]
+                }
+            }
+        },
+        {
+            "name": "Jobs - Get All Jobs",
+            "request": {
+                "method": "GET",
+                "url": {
+                    "raw": "{{baseUrl}}/jobs?search=&location=&skills=&minSalary=&maxSalary=&page=1&limit=10",
+                    "host": ["{{baseUrl}}"],
+                    "path": ["jobs"],
+                    "query": [
+                        { "key": "search", "value": "" },
+                        { "key": "location", "value": "" },
+                        { "key": "skills", "value": "" },
+                        { "key": "minSalary", "value": "" },
+                        { "key": "maxSalary", "value": "" },
+                        { "key": "page", "value": "1" },
+                        { "key": "limit", "value": "10" }
                     ]
                 }
             }
         },
         {
-            "name": "Get Jobs",
+            "name": "Jobs - Get Job by ID",
             "request": {
                 "method": "GET",
                 "url": {
-                    "raw": "{{baseUrl}}/jobs",
-                    "host": [
-                        "{{baseUrl}}"
-                    ],
-                    "path": [
-                        "jobs"
-                    ]
+                    "raw": "{{baseUrl}}/jobs/{{jobId}}",
+                    "host": ["{{baseUrl}}"],
+                    "path": ["jobs", "{{jobId}}"]
+                }
+            }
+        },
+        {
+            "name": "Jobs - Update Job",
+            "request": {
+                "method": "PUT",
+                "header": [
+                    { "key": "Content-Type", "value": "application/json" },
+                    { "key": "Authorization", "value": "Bearer {{token}}" }
+                ],
+                "body": {
+                    "mode": "raw",
+                    "raw": "{\n  \"title\": \"Senior React Developer\",\n  \"salary\": 70000\n}"
+                },
+                "url": {
+                    "raw": "{{baseUrl}}/jobs/{{jobId}}",
+                    "host": ["{{baseUrl}}"],
+                    "path": ["jobs", "{{jobId}}"]
+                }
+            }
+        },
+        {
+            "name": "Jobs - Delete Job",
+            "request": {
+                "method": "DELETE",
+                "header": [
+                    { "key": "Authorization", "value": "Bearer {{token}}" }
+                ],
+                "url": {
+                    "raw": "{{baseUrl}}/jobs/{{jobId}}",
+                    "host": ["{{baseUrl}}"],
+                    "path": ["jobs", "{{jobId}}"]
+                }
+            }
+        },
+        {
+            "name": "Applications - Apply for Job",
+            "request": {
+                "method": "POST",
+                "header": [
+                    { "key": "Content-Type", "value": "application/json" },
+                    { "key": "Authorization", "value": "Bearer {{token}}" }
+                ],
+                "body": {
+                    "mode": "raw",
+                    "raw": "{\n  \"jobId\": \"{{jobId}}\",\n  \"resume\": \"https://drive.google.com/my-resume.pdf\"\n}"
+                },
+                "url": {
+                    "raw": "{{baseUrl}}/applications",
+                    "host": ["{{baseUrl}}"],
+                    "path": ["applications"]
+                }
+            }
+        },
+        {
+            "name": "Applications - Get My Applications",
+            "request": {
+                "method": "GET",
+                "header": [
+                    { "key": "Authorization", "value": "Bearer {{token}}" }
+                ],
+                "url": {
+                    "raw": "{{baseUrl}}/applications/my",
+                    "host": ["{{baseUrl}}"],
+                    "path": ["applications", "my"]
+                }
+            }
+        },
+        {
+            "name": "Applications - Get Applications for Job",
+            "request": {
+                "method": "GET",
+                "header": [
+                    { "key": "Authorization", "value": "Bearer {{token}}" }
+                ],
+                "url": {
+                    "raw": "{{baseUrl}}/applications/job/{{jobId}}",
+                    "host": ["{{baseUrl}}"],
+                    "path": ["applications", "job", "{{jobId}}"]
+                }
+            }
+        },
+        {
+            "name": "Applications - Update Status",
+            "request": {
+                "method": "PATCH",
+                "header": [
+                    { "key": "Content-Type", "value": "application/json" },
+                    { "key": "Authorization", "value": "Bearer {{token}}" }
+                ],
+                "body": {
+                    "mode": "raw",
+                    "raw": "{\n  \"status\": \"accepted\"\n}"
+                },
+                "url": {
+                    "raw": "{{baseUrl}}/applications/{{applicationId}}",
+                    "host": ["{{baseUrl}}"],
+                    "path": ["applications", "{{applicationId}}"]
                 }
             }
         }
     ],
     "variable": [
-        {
-            "key": "baseUrl",
-            "value": "http://localhost:5000/api"
-        },
-        {
-            "key": "token",
-            "value": ""
-        }
+        { "key": "baseUrl", "value": "http://localhost:5000/api" },
+        { "key": "token", "value": "" },
+        { "key": "jobId", "value": "" },
+        { "key": "applicationId", "value": "" }
     ]
 }

@@ -4,6 +4,8 @@ const applicationSchema = new mongoose.Schema({
     jobId: { type: mongoose.Schema.Types.ObjectId, ref: 'Job', required: true },
     candidateId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
     resume: { type: String, required: true },
+    resumeType: { type: String, enum: ['file', 'link'], default: 'link' },
+    message: { type: String, default: '' },
     status: { type: String, enum: ['pending', 'accepted', 'rejected'], default: 'pending' },
     createdAt: { type: Date, default: Date.now }
 });

@@ -3,21 +3,44 @@ import Job from '../models/Job.js';
 
 const applyForJob = async (req, res, next) => {
     try {
-        const { jobId, resume } = req.body;
+        const { jobId, resumeLink, message } = req.body;
 
-        if (!jobId || !resume) {
-            return res.status(400).json({ success: false, message: 'Job ID and resume are required' });
+        if (!jobId) {
+            return res.status(400).json({ success: false, message: 'Job ID is required' });
+        }
+
+        // Determine resume value: uploaded file path OR provided URL link
+        let resume = '';
+        let resumeType = 'link';
+
+        if (req.file) {
+            // File was uploaded via multer
+            resume = `/uploads/resumes/${req.file.filename}`;
+            resumeType = 'file';
+        } else if (resumeLink && resumeLink.trim()) {
+            resume = resumeLink.trim();
+            resumeType = 'link';
+        } else {
+            return res.status(400).json({ success: false, message: 'Please upload a resume file or provide a resume link' });
+        }
+
+        // Validate that the job actually exists
+        const job = await Job.findById(jobId);
+        if (!job) {
+            return res.status(404).json({ success: false, message: 'Job not found' });
         }
 
         const existing = await Application.findOne({ jobId, candidateId: req.user._id });
         if (existing) {
-            return res.status(400).json({ success: false, message: 'You already applied for this job' });
+            return res.status(400).json({ success: false, message: 'You have already applied for this job' });
         }
 
         const application = await Application.create({
             jobId,
             candidateId: req.user._id,
-            resume
+            resume,
+            resumeType,
+            message: message || ''
         });
 
         res.status(201).json({ success: true, application });
@@ -51,6 +74,23 @@ const getApplicationsForJob = async (req, res, next) => {
 
         const applications = await Application.find({ jobId: req.params.jobId })
             .populate('candidateId', 'name email')
+            .populate('jobId', 'title company location salary')
+            .sort({ createdAt: -1 });
+
+        res.status(200).json({ success: true, applications });
+    } catch (error) {
+        next(error);
+    }
+};
+
+const getEmployerApplications = async (req, res, next) => {
+    try {
+        const myJobs = await Job.find({ postedBy: req.user._id }).select('_id');
+        const jobIds = myJobs.map(j => j._id);
+
+        const applications = await Application.find({ jobId: { $in: jobIds } })
+            .populate('candidateId', 'name email')
+            .populate('jobId', 'title company location salary')
             .sort({ createdAt: -1 });
 
         res.status(200).json({ success: true, applications });
@@ -62,6 +102,12 @@ const getApplicationsForJob = async (req, res, next) => {
 const updateApplicationStatus = async (req, res, next) => {
     try {
         const { status } = req.body;
+
+        const allowedStatuses = ['pending', 'accepted', 'rejected'];
+        if (!status || !allowedStatuses.includes(status)) {
+            return res.status(400).json({ success: false, message: 'Status must be pending, accepted, or rejected' });
+        }
+
         const application = await Application.findById(req.params.id).populate('jobId');
 
         if (!application) {
@@ -81,4 +127,4 @@ const updateApplicationStatus = async (req, res, next) => {
     }
 };
 
-export { applyForJob, getMyApplications, getApplicationsForJob, updateApplicationStatus };
+export { applyForJob, getMyApplications, getApplicationsForJob, getEmployerApplications, updateApplicationStatus };

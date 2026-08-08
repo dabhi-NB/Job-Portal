@@ -1,5 +1,8 @@
 import Job from '../models/Job.js';
 
+// Helper: escape regex special characters to prevent NoSQL injection
+const escapeRegex = (str) => str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+
 const createJob = async (req, res, next) => {
     try {
         const { title, company, description, location, salary, skills } = req.body;
@@ -27,13 +30,14 @@ const getAllJobs = async (req, res, next) => {
         const query = {};
 
         if (search) {
+            const safe = escapeRegex(search);
             query.$or = [
-                { title: { $regex: search, $options: 'i' } },
-                { company: { $regex: search, $options: 'i' } }
+                { title: { $regex: safe, $options: 'i' } },
+                { company: { $regex: safe, $options: 'i' } }
             ];
         }
 
-        if (location) query.location = { $regex: location, $options: 'i' };
+        if (location) query.location = { $regex: escapeRegex(location), $options: 'i' };
         if (skills) {
             const skillArray = skills.split(',').map((skill) => skill.trim()).filter(Boolean);
             if (skillArray.length) query.skills = { $in: skillArray };
@@ -82,7 +86,17 @@ const updateJob = async (req, res, next) => {
             return res.status(403).json({ success: false, message: 'You can only update your own jobs' });
         }
 
-        const updatedJob = await Job.findByIdAndUpdate(req.params.id, req.body, { new: true, runValidators: true });
+        // Whitelist allowed fields — prevent overwriting postedBy or other protected fields
+        const { title, company, description, location, salary, skills } = req.body;
+        const allowedUpdates = {};
+        if (title !== undefined) allowedUpdates.title = title;
+        if (company !== undefined) allowedUpdates.company = company;
+        if (description !== undefined) allowedUpdates.description = description;
+        if (location !== undefined) allowedUpdates.location = location;
+        if (salary !== undefined) allowedUpdates.salary = salary;
+        if (skills !== undefined) allowedUpdates.skills = skills;
+
+        const updatedJob = await Job.findByIdAndUpdate(req.params.id, allowedUpdates, { new: true, runValidators: true });
         res.status(200).json({ success: true, job: updatedJob });
     } catch (error) {
         next(error);

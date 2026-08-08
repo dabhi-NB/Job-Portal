@@ -133,7 +133,7 @@
                 ],
                 "body": {
                     "mode": "raw",
-                    "raw": "{\n  \"jobId\": \"{{jobId}}\",\n  \"resume\": \"https://drive.google.com/my-resume.pdf\"\n}"
+                    "raw": "{\n  \"jobId\": \"{{jobId}}\",\n  \"resumeLink\": \"https://drive.google.com/my-resume.pdf\"\n}"
                 },
                 "url": {
                     "raw": "{{baseUrl}}/applications",

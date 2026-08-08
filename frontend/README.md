@@ -20,7 +20,7 @@ VITE_API_BASE_URL=http://localhost:5000/api
 - React Router 7
 - Axios
 - Vite 8
-- Plain CSS (responsive)
+- Tailwind CSS v4 (`@tailwindcss/vite`, dark/light mode via `ThemeContext`)
 
 ## Pages
 - **Home** — Browse and search/filter jobs

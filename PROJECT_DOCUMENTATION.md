@@ -206,7 +206,7 @@ Job-Portal/
 ```bash
 cd backend
 npm install
-# Ensure .env has MONGO_URI, JWT_SECRET, and PORT=5000
+# Ensure .env has MONGODB_URI, JWT_SECRET, and PORT=5000
 npm run dev
 ```
 

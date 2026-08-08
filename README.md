@@ -12,7 +12,7 @@ A MERN stack job portal with employer and candidate roles.
 ## Tech Stack
 - **Backend:** Node.js, Express, MongoDB, Mongoose, JWT, bcryptjs
 - **Frontend:** React, React Router, Axios, Vite
-- **Styling:** Plain CSS (responsive)
+- **Styling:** Tailwind CSS v4 (`@tailwindcss/vite`, with dark/light mode theme support)
 
 ## Setup
 
@@ -22,7 +22,7 @@ A MERN stack job portal with employer and candidate roles.
 
 ### 1. Clone the repo
 ```bash
-git clone <repo-url>
+git clone https://github.com/dabhi-NB/Job-Portal
 cd job-portal
 ```
 
